@@ -1,0 +1,23 @@
+/* Custom Styles */
+
+/* Navbar title styling */
+a.logo-title,
+a.logo-title h1 {
+  color: #fff !important;
+  font-size: 1.35rem !important;
+}
+
+/* Navbar links styling */
+.navbar-item > a {
+  color: #fff;
+}
+
+/* Navbar icons styling */
+.navbar-item > a i {
+  color: #fff;
+}
+
+/* Home banner title text shadow */
+.description {
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.75);
+}
