@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    
+    <meta name="author" content="Cinahan Yu">
+    
+    <!-- Completely eliminate flash of wrong theme -->
+    <script>
+        (function() {
+            const THEME_KEY = "REDEFINE-THEME-STATUS";
+            const DARK = "dark", LIGHT = "light";
+            
+            // Get preferred theme
+            function getTheme() {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved) {
+                        const { isDark } = JSON.parse(saved);
+                        return isDark ? DARK : LIGHT;
+                    }
+                } catch (e) {}
+                
+                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                const isDark = theme === DARK;
+                const root = document.documentElement;
+                
+                // Set classes for compatibility
+                root.classList.add(theme);
+                root.classList.remove(isDark ? LIGHT : DARK);
+                root.style.colorScheme = theme;
+            }
+            
+            // Initial application
+            const theme = getTheme();
+            applyTheme(theme);
+            
+            // Listen for system preference changes
+            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+                // Only update if using system preference (no localStorage entry)
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(matches ? DARK : LIGHT);
+                }
+            });
+            
+            // Set body classes ASAP (before DOMContentLoaded)
+            (function() {
+                const addBodyClass = () => {
+                    const b = document.body;
+                    if (!b) return false;
+                    b.classList.add(theme + "-mode");
+                    return true;
+                };
+
+                // Try immediately
+                if (addBodyClass()) return;
+
+                // Observe until body exists
+                const mo = new MutationObserver(() => {
+                    if (addBodyClass()) mo.disconnect();
+                });
+                mo.observe(document.documentElement, { childList: true, subtree: true });
+            })();
+        })();
+    </script>
+    
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://CianHanYu1997.github.io/2026/02/24/python-oop介紹/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+        
+        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python OOP介紹">
+<meta property="og:url" content="https://cianhanyu1997.github.io/2026/02/24/Python-OOP%E4%BB%8B%E7%B4%B9/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://cianhanyu1997.github.io/images/redefine-og.webp">
+<meta property="article:published_time" content="2026-02-24T07:33:30.000Z">
+<meta property="article:modified_time" content="2026-04-16T15:46:02.715Z">
+<meta property="article:author" content="CianHan Yu">
+<meta property="article:tag" content="Python基礎">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cianhanyu1997.github.io/images/redefine-og.webp">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/donkey.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/donkey.png">
+    <meta name="theme-color" content="#f9a11b">
+    <link rel="shortcut icon" href="/images/donkey.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            Python OOP介紹 | 成長的毛驢
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+        
+            
+    
+            
+    
+            
+                
+                    <link rel="stylesheet" href="/css/custom.css">
+                
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"cianhanyu1997.github.io","root":"/","language":"zh-TW"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":false,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推薦文章","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#f9a11b","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":true,"family":"Noto Sans SC# Font family","url":"https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap"},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/light-bg.jpg","dark":"/images/dark-bg.jpg"},"title":"毛驢的學習筆記","subtitle":{"text":["記錄自己的技術文章","成長為資深工程師","用程式碼解決問題"],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#fff"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":[{"icon":"fa-brands fa-github","url":"https://github.com/CianHanYu1997"},{"icon":"fa-solid fa-at","url":"cianhanyu1997@gmail.com"}],"qrs":[]}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":true,"version":"11.4.1","theme":{"light":"default","dark":"dark"}}},"version":"2.9.0","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur","masonry":{"batch_size":12,"initial_batch_size":24}},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":{"Archives":{"path":"/archives","icon":"fa-regular fa-archive"}}},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footer":{"runtime":true,"icon":"<i class=\"fa-solid fa-heart fa-beat\" style=\"--fa-animation-duration: 0.5s; color: #f54545\"></i>","start":"2026/02/07 11:45:14","statistics":true,"customize":null,"icp":{"enable":false,"number":null,"url":null}},"footerStart":"2026/02/07 11:45:14","mermaid":{"style":{"light":"default","dark":"dark"}}};
+    window.lang_ago = {"second":"%s 秒前","minute":"%s 分鐘前","hour":"%s 小時前","day":"%s 天前","week":"%s 周前","month":"%s 個月前","year":"%s 年前"};
+    window.i18n = {"search":"站內搜尋您想要的內容...","toc":"目錄","prev":"上一頁","next":"下一頁","prev_posts":"上一篇","next_posts":"下一篇","page":"第 %d 頁","recent_posts":"之前的文章","share":"分享","powered_by":"%s 框架","theme":"主題","rss_feed":"RSS 訂閱","category":"分類","categories":"分類","tag":"標籤","tags":"標籤","post":"文章","posts":"文章","tagcloud":"標籤雲","comment":"留言","comments":"留言","top":"頂端","sticky":"置頂","go-back-home":"回到首頁","masonry_loading":"照片載入中...","image_viewer":"圖片檢視器","close":"關閉","exif":{"title":"EXIF","cards":{"camera":"相機","lens":"鏡頭","exposure":"曝光","other":"其他"},"fields":{"make":"品牌","model":"機型","date_taken":"拍攝時間","lens_model":"鏡頭","focal_length":"焦距","focus_mode":"對焦模式","shutter":"快門","aperture":"光圈","iso":"感光度","exposure_program":"曝光程序","exposure_compensation":"曝光補償","metering_mode":"測光模式","flash":"閃光燈","white_balance":"白平衡","latitude":"緯度","longitude":"經度","altitude":"海拔"},"status":{"loading":"載入中...","no_exif":"無 EXIF 資訊","library_missing":"EXIF 程式庫未載入","image_source_missing":"圖片位址不可用","unavailable":"EXIF 不可用（可能被 CORS 阻擋或缺少中繼資料）","flag_unavailable":"EXIF 不可用"}},"home":"首頁","archive":"歸檔","archives":"歸檔","about":"關於","links":"連結","link":"連結","friends":"友情連結","friend":"友情連結","timeline":"時間軸","shuoshuo":"說說","changelog":"日誌","bookmarks":"書籤","site_uv":"讀者","site_pv":"閱覽","read_more":"繼續閱讀...","wordcount":"字數","min2read":"分鐘","status":"狀態","runtime":"部落格已運行","days":"天","hours":"小時","minutes":"分鐘","seconds":"秒","optimized_by":"並由 Evan 進行最佳化","rights":"版權所有","site_posts":"共 %s 篇文章","site_wordcount":"共 %s 字","copyright":{"author":"作者","title":"標題","link":"連結","create_time":"撰寫於","update_time":"更新於","license_title":"版權宣告","license_content":"本作品採用 %s 進行許可。","all_rights_reserved":"保留所有權利 &#169 %s","public_domain":"本作品已在公共領域中，可自由轉載、修改、散佈，無需經過作者同意。"},"ago":{"second":"%s 秒前","minute":"%s 分鐘前","hour":"%s 小時前","day":"%s 天前","week":"%s 周前","month":"%s 個月前","year":"%s 年前"},"create_time":"撰寫","update_time":"更新","expired":"這篇文章最後更新於 %s 天前，內容可能已經過時。"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                成長的毛驢
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    首頁
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    歸檔
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                首頁
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                歸檔
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+                
+                    
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">4</div>
+        <div class="label text-third-text-color text-sm">標籤</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">2</div>
+        <div class="label text-third-text-color text-sm">分類</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">5</div>
+        <div class="label text-third-text-color text-sm">文章</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">Python OOP介紹</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] shrink-0 rounded-medium border border-border-color p-px">
+				<img src="/images/profile.png">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">Cinahan Yu</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv1</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2026-02-24 07:33:30</span>
+        <span class="mobile">2026-02-24 07:33:30</span>
+        <span class="hover-info">撰寫</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2026-04-16 15:46:02</span>
+            <span class="mobile">2026-04-16 15:46:02</span>
+            <span class="hover-info">更新</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Python%E5%9F%BA%E7%A4%8E/">Python基礎</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>介紹 Python 物件導向程式設計（OOP）的基礎概念，建立核心觀念，涵蓋以下內容：</p>
+<ul>
+<li><strong>OOP 是什麼</strong>：物件導向程式設計的定義與核心思想</li>
+<li><strong>物件是什麼</strong>：屬性（Attribute）與方法（Method）的組成</li>
+<li><strong>類別與物件的關係</strong>：Class 作為藍圖，Instance 作為實體</li>
+<li><strong>物件的屬性</strong>：實例屬性的定義與存取方式</li>
+<li><strong>物件的實體方法</strong>：在類別中定義行為</li>
+<li><strong>類別屬性</strong>：所有 Instance 共享的屬性與查找順序</li>
+<li><strong>屬性裝飾器（Property）</strong>：資料驗證、動態計算與唯讀保護</li>
+<li><strong>限定屬性存取</strong>：使用 <code>__slots__</code> 限制可設定的屬性範圍</li>
+<li><strong>類別方法與靜態方法</strong>：<code>@classmethod</code> 與 <code>@staticmethod</code> 的差異與應用場景</li>
+<li><strong>繼承</strong>：<code>super()</code> 的用法與 Override &#x2F; Extend 的差異</li>
+<li><strong>多重繼承</strong>：組合多個類別的功能與 MRO 機制</li>
+</ul>
+<span id="more"></span>
+
+<hr>
+<h2 id="OOP-是什麼？"><a href="#OOP-是什麼？" class="headerlink" title="OOP 是什麼？"></a>OOP 是什麼？</h2><p>全名為物件導向程式設計（Object-Oriented Programming, OOP），是一種程式設計的範式（Paradigm），以物件的方式描述資料應有的狀態與行為。</p>
+<h3 id="物件是什麼？"><a href="#物件是什麼？" class="headerlink" title="物件是什麼？"></a>物件是什麼？</h3><p>物件通常是指一小塊擁有值的記憶體位置，由**屬性（Attribute）<strong>與</strong>方法（Method）**組成，通常是由類別（Class）產生的「實體（Instance）」。</p>
+<blockquote>
+<p><strong>物件（Object） &#x3D; 屬性（Attribute） + 方法（Method）</strong></p>
+</blockquote>
+<p>舉例來說：</p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Object</td>
+<td>小貓</td>
+</tr>
+<tr>
+<td>Attribute</td>
+<td>白色、體重、生日、公、名字（Honey）</td>
+</tr>
+<tr>
+<td>Method</td>
+<td>走路、喵喵叫、打翻杯子</td>
+</tr>
+</tbody></table>
+<p>在程式設計或執行階段，我們可以藉由更新 Attribute 來改變 Object，以達成預期的結果。例如，當 <code>體重 &gt; 10kg</code> 時，Honey 執行「打翻杯子」的成功率會從 50% 提升至 100%。</p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name, weight</span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name        <span class="comment"># Attribute: 名字</span></span><br><span class="line">        <span class="variable language_">self</span>.weight = weight    <span class="comment"># Attribute: 體重</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">knock_over_cup</span>(<span class="params">self</span>):   <span class="comment"># Method: 打翻杯子</span></span><br><span class="line">        <span class="comment"># 根據內部狀態 (weight) 進行判定</span></span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.weight &gt; <span class="number">10</span>:</span><br><span class="line">            success_rate = <span class="number">1.0</span>  <span class="comment"># 100% 成功</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            success_rate = <span class="number">0.5</span>  <span class="comment"># 50% 成功</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 執行動作並決定結果</span></span><br><span class="line">        <span class="keyword">if</span> random.random() &lt; success_rate:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">f&quot;【成功】<span class="subst">&#123;self.name&#125;</span> 輕而易舉地把杯子推倒了！&quot;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">f&quot;【失敗】<span class="subst">&#123;self.name&#125;</span> 太輕了，杯子動也不動。&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<h2 id="類別與物件的關係"><a href="#類別與物件的關係" class="headerlink" title="類別與物件的關係"></a>類別與物件的關係</h2><p>類別（Class）就像是一個藍圖或模具，定義了物件應具備哪些屬性與行為。當我們根據這個模具建立實體（Instance）時，雖然它們擁有相同的結構，但每個實體都可以擁有獨立且不同的狀態（資料）。</p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span>:</span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">honey = Cat()</span><br><span class="line">mochi = Cat()</span><br></pre></td></tr></table></figure></div>
+
+<p>將上述物件打印出來後，會看到：</p>
+<div class="code-container" data-rel="Text"><figure class="iseeu highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;__main__.Cat object at 0x107f92e80&gt;</span><br><span class="line">&lt;__main__.Cat object at 0x107f92e50&gt;</span><br></pre></td></tr></table></figure></div>
+
+<p>輸出格式說明：</p>
+<ul>
+<li><code>__main__</code>：模組名稱，即當前的執行腳本。</li>
+<li><code>.Cat</code>：環境中定義的 Class 名稱。</li>
+<li><code>object</code>：一個 Instance，也就是「小貓 Honey」或「小貓 Mochi」。</li>
+<li><code>at 0x107f92e80</code>：該 Instance 在記憶體中的實際位址。</li>
+</ul>
+<details>
+<summary>➡️ 延伸複習：GC 與記憶體管理</summary>
+<div style="padding: 0.5em 1em; margin-top: 0.5em;">
+
+<p><code>__main__</code> 模組本身是 GC Root，可以回頭複習前篇介紹的垃圾回收機制（GC）。</p>
+
+<table style="border-collapse: collapse; width: 100%;">
+  <thead>
+    <tr>
+      <th style="border: 1px solid #ccc; padding: 6px 12px; background: #f5f5f5;">層級</th>
+      <th style="border: 1px solid #ccc; padding: 6px 12px; background: #f5f5f5;">名稱</th>
+      <th style="border: 1px solid #ccc; padding: 6px 12px; background: #f5f5f5;">角色</th>
+      <th style="border: 1px solid #ccc; padding: 6px 12px; background: #f5f5f5;">說明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;">Root</td>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;"><code>__main__</code></td>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;">執行環境（Module）</td>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;">程式運行的起點，永遠不會被回收。</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;">↓ 引用</td>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;"><code>Cat</code></td>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;">類別（Class Object）</td>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;">實體物件的「模板」。</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;">↓ 引用</td>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;"><code>honey</code></td>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;">變數（Variable）</td>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;">全域定義的名稱。</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;">↓ 指向</td>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;"><code>0x107f...</code></td>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;">實體（Instance Object）</td>
+      <td style="border: 1px solid #ccc; padding: 6px 12px;">真正佔用記憶體、會打翻杯子的那隻「貓」。</td>
+    </tr>
+  </tbody>
+</table>
+
+</div>
+</details>
+
+<p>所有的 Object，不論是自己設計還是 Python 內建的，都是由某個 Class 建立的，可以透過 <code>__class__</code> 屬性觀察該 Object 是由哪個類別所建立的。</p>
+<h3 id="物件的屬性"><a href="#物件的屬性" class="headerlink" title="物件的屬性"></a>物件的屬性</h3><p>每個 Object 都有 Attribute 可以存取，且其狀態可以被改變。Class 裡面的 <code>__init__()</code> 負責初始化，通常會將傳入的參數指定為 Object 的 Attribute，讓我們得以區分不同的實體。</p>
+<blockquote>
+<p>在 <code>__init__()</code> 中建立的 Attribute，稱為<strong>實例屬性（Instance Attributes）</strong>。</p>
+</blockquote>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name, weight</span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name        <span class="comment"># Attribute: 名字</span></span><br><span class="line">        <span class="variable language_">self</span>.weight = weight    <span class="comment"># Attribute: 體重</span></span><br><span class="line"></span><br><span class="line">honey = Cat(<span class="string">&quot;Honey&quot;</span>, <span class="number">18</span>)</span><br><span class="line">mochi = Cat(<span class="string">&quot;Mochi&quot;</span>, <span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(honey.name)   <span class="comment"># Honey</span></span><br><span class="line"><span class="built_in">print</span>(mochi.weight) <span class="comment"># 5</span></span><br></pre></td></tr></table></figure></div>
+
+<p>另一個查看 Attribute 的方式，是透過 Object 的 <code>__dict__</code> 屬性：</p>
+<div class="code-container" data-rel="Text"><figure class="iseeu highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; honey.__dict__</span><br><span class="line">&#123;&#x27;name&#x27;: &#x27;Honey&#x27;, &#x27;weight&#x27;: 18&#125;</span><br><span class="line">&gt;&gt;&gt; mochi.__dict__</span><br><span class="line">&#123;&#x27;name&#x27;: &#x27;Mochi&#x27;, &#x27;weight&#x27;: 5&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>延伸：<code>AttributeError</code></strong></p>
+<p>當使用 <code>.</code> 語法存取不存在的 Attribute 時，會觸發 <code>AttributeError</code>。可以使用內建的 <code>getattr()</code> 函數並提供預設值，來安全地存取：</p>
+<div class="code-container" data-rel="Text"><figure class="iseeu highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; honey.hello</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">AttributeError: &#x27;Cat&#x27; object has no attribute &#x27;hello&#x27;</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; getattr(honey, &quot;hello&quot;, &quot;Hello Honey&quot;)</span><br><span class="line">&#x27;Hello Honey&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="物件的實體方法"><a href="#物件的實體方法" class="headerlink" title="物件的實體方法"></a>物件的實體方法</h3><p>除了 Attribute 以外，在 Class 裡面定義的 function 稱為<strong>方法（Method）</strong>，或稱<strong>實體方法（Instance Method）</strong>。</p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name, weight</span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name        <span class="comment"># Attribute: 名字</span></span><br><span class="line">        <span class="variable language_">self</span>.weight = weight    <span class="comment"># Attribute: 體重</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">speak</span>(<span class="params">self, sound=<span class="string">&quot;mew&quot;</span></span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;I&#x27;m <span class="subst">&#123;self.name&#125;</span> <span class="subst">&#123;sound&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">honey = Cat(<span class="string">&quot;Honey&quot;</span>, <span class="number">20</span>)</span><br><span class="line">honey.speak()       <span class="comment"># I&#x27;m Honey mew</span></span><br><span class="line">honey.speak(<span class="string">&quot;Ha&quot;</span>)   <span class="comment"># I&#x27;m Honey Ha</span></span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<h3 id="類別屬性"><a href="#類別屬性" class="headerlink" title="類別屬性"></a>類別屬性</h3><p>屬於 Class 本身的 Attribute，不需要建立 Instance 即可直接存取。同樣可以透過 <code>__dict__</code> 查看 Class Attribute。</p>
+<p>常見用途：</p>
+<ol>
+<li><strong>資訊共享</strong>：讓所有 Instance 共享同一份資料（如 <code>list</code>、<code>dict</code>）。需注意可變型別的共享問題——一個 Instance 修改後，所有 Instance 都會受到影響。</li>
+<li><strong>狀態同步</strong>：追蹤所有 Instance 的集體行為。例如爬蟲的頻率限制，所有 Instance 需要共享同一個冷卻時間計數器。</li>
+<li><strong>命名空間封裝</strong>：將與這個類別相關的常數或設定集中放置，避免污染全域命名空間。</li>
+</ol>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span>:</span><br><span class="line">    count = <span class="number">0</span>  <span class="comment"># class Attribute</span></span><br><span class="line">    action = ()  <span class="comment"># class Attribute</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name, weight</span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name        <span class="comment"># Object Attribute: 名字</span></span><br><span class="line">        <span class="variable language_">self</span>.weight = weight    <span class="comment"># Object Attribute: 體重</span></span><br><span class="line">        Cat.count += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">honey = Cat(<span class="string">&quot;Honey&quot;</span>, <span class="number">18</span>)</span><br><span class="line">mochi = Cat(<span class="string">&quot;Mochi&quot;</span>, <span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(honey.count)  <span class="comment"># 2</span></span><br></pre></td></tr></table></figure></div>
+
+<blockquote>
+<p><strong>屬性查找順序</strong>：Python 會先在 Instance 中尋找 Attribute，若找不到才往 Class 中查找，最後仍找不到才拋出 <code>AttributeError</code>。這就是為什麼 <code>honey.count</code> 能存取到 Class Attribute <code>count</code>。</p>
+</blockquote>
+<hr>
+<h3 id="屬性裝飾器（Property）"><a href="#屬性裝飾器（Property）" class="headerlink" title="屬性裝飾器（Property）"></a>屬性裝飾器（Property）</h3><p>Attribute 雖然方便，但若要防止被賦予不合理的值，可以使用 <code>@property</code> 裝飾器來加以限制。其核心概念是將 Method 偽裝成 Attribute，讓屬性具備<strong>資料驗證</strong>、<strong>動態計算</strong>與<strong>唯讀保護</strong>等功能。</p>
+<p>一個完整的 <code>property</code> 通常包含三個組件：</p>
+<table>
+<thead>
+<tr>
+<th>組件</th>
+<th>裝飾器</th>
+<th>觸發時機</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Getter</td>
+<td><code>@property</code></td>
+<td>讀取屬性時</td>
+</tr>
+<tr>
+<td>Setter</td>
+<td><code>@&lt;name&gt;.setter</code></td>
+<td>寫入屬性時</td>
+</tr>
+<tr>
+<td>Deleter</td>
+<td><code>@&lt;name&gt;.deleter</code></td>
+<td>刪除屬性時</td>
+</tr>
+</tbody></table>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Temperature</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, celsius=<span class="number">0</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>._celsius = celsius  <span class="comment"># 底線開頭慣例表示「內部使用」</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">celsius</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;Getter：讀取溫度&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>._celsius</span><br><span class="line"></span><br><span class="line"><span class="meta">    @celsius.setter</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">celsius</span>(<span class="params">self, value</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;Setter：寫入溫度並進行驗證&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> value &lt; -<span class="number">273.15</span>:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">&quot;溫度不能低於絕對零度！&quot;</span>)</span><br><span class="line">        <span class="variable language_">self</span>._celsius = value</span><br><span class="line"></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">fahrenheit</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;唯讀屬性：直接根據攝氏計算華氏&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> (<span class="variable language_">self</span>._celsius * <span class="number">9</span>/<span class="number">5</span>) + <span class="number">32</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 使用方式 ---</span></span><br><span class="line">t = Temperature(<span class="number">25</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(t.celsius)     <span class="comment"># 觸發 Getter -&gt; 輸出 25</span></span><br><span class="line">t.celsius = <span class="number">30</span>       <span class="comment"># 觸發 Setter -&gt; 成功修改</span></span><br><span class="line"><span class="comment"># t.celsius = -300   # 觸發 Setter -&gt; 拋出 ValueError</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(t.fahrenheit)  <span class="comment"># 像屬性一樣讀取，但背後是即時計算</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<h3 id="限定屬性存取"><a href="#限定屬性存取" class="headerlink" title="限定屬性存取"></a>限定屬性存取</h3><p><code>__slots__</code> 可以限制 Object 的 Attribute 只能設定在 <code>__slots__</code> 的名單裡，如果不在名單中，會跳出 <code>AttributeError</code> 錯誤。</p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span>:</span><br><span class="line">    __slots__ = (<span class="string">&#x27;name&#x27;</span>, <span class="string">&#x27;age&#x27;</span>)</span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<h2 id="類別方法與靜態方法"><a href="#類別方法與靜態方法" class="headerlink" title="類別方法與靜態方法"></a>類別方法與靜態方法</h2><p>除了實體方法之外，Python 還提供兩種特殊的方法型態：靜態方法與類別方法。</p>
+<table>
+<thead>
+<tr>
+<th>方法類型</th>
+<th>裝飾器</th>
+<th>第一個參數</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>實體方法</td>
+<td>（無）</td>
+<td><code>self</code>（實體本身）</td>
+<td>操作實體的狀態</td>
+</tr>
+<tr>
+<td>靜態方法</td>
+<td><code>@staticmethod</code></td>
+<td>無</td>
+<td>與類別相關的工具函數</td>
+</tr>
+<tr>
+<td>類別方法</td>
+<td><code>@classmethod</code></td>
+<td><code>cls</code>（類別本身）</td>
+<td>操作類別層級的狀態</td>
+</tr>
+</tbody></table>
+<h3 id="靜態方法（-staticmethod）"><a href="#靜態方法（-staticmethod）" class="headerlink" title="靜態方法（@staticmethod）"></a>靜態方法（<code>@staticmethod</code>）</h3><p>靜態方法不依賴任何實體或類別的狀態，不需要傳入 <code>self</code> 或 <code>cls</code>。雖然它邏輯上隸屬於某個類別，但本質上就是一個放在類別命名空間裡的普通函數。</p>
+<p><strong>適用情境</strong>：驗證、格式轉換等與物件狀態無關的工具型操作。</p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span>:</span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">is_valid_name</span>(<span class="params">name</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;驗證名字是否合法（只能包含字母）&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> name.isalpha()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 不需要建立 Instance，直接透過類別呼叫</span></span><br><span class="line"><span class="built_in">print</span>(Cat.is_valid_name(<span class="string">&quot;Honey&quot;</span>))    <span class="comment"># True</span></span><br><span class="line"><span class="built_in">print</span>(Cat.is_valid_name(<span class="string">&quot;Honey123&quot;</span>)) <span class="comment"># False</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="類別方法（-classmethod）"><a href="#類別方法（-classmethod）" class="headerlink" title="類別方法（@classmethod）"></a>類別方法（<code>@classmethod</code>）</h3><p>類別方法與類別本身綁定，第一個參數固定為 <code>cls</code>（代表類別本身，而非實體）。</p>
+<p><strong>常見用途：</strong></p>
+<p><strong>1. 工廠方法</strong>：提供多種方式來建立 Object Instance。</p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name, weight</span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name</span><br><span class="line">        <span class="variable language_">self</span>.weight = weight</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">from_string</span>(<span class="params">cls, cat_string</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;從格式為 &#x27;Name-Weight&#x27; 的字串建立 Cat Instance&quot;&quot;&quot;</span></span><br><span class="line">        name, weight = cat_string.split(<span class="string">&quot;-&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> cls(name, <span class="built_in">int</span>(weight))</span><br><span class="line"></span><br><span class="line">honey = Cat.from_string(<span class="string">&quot;Honey-18&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(honey.name)    <span class="comment"># Honey</span></span><br><span class="line"><span class="built_in">print</span>(honey.weight)  <span class="comment"># 18</span></span><br></pre></td></tr></table></figure></div>
+
+<p><strong>2. 修改類別狀態</strong>：操作所有 Instance 共享的類別屬性。</p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span>:</span><br><span class="line">    count = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name</span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name</span><br><span class="line">        Cat.count += <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">reset_count</span>(<span class="params">cls</span>):</span><br><span class="line">        cls.count = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">Cat(<span class="string">&quot;Honey&quot;</span>)</span><br><span class="line">Cat(<span class="string">&quot;Mochi&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(Cat.count)   <span class="comment"># 2</span></span><br><span class="line">Cat.reset_count()</span><br><span class="line"><span class="built_in">print</span>(Cat.count)   <span class="comment"># 0</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="繼承"><a href="#繼承" class="headerlink" title="繼承"></a>繼承</h2><p>常常看到 <code>super()</code>，這是什麼意思？</p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Animal</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">walk</span> (<span class="variable language_">self</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Animal walking&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span>(<span class="title class_ inherited__">Animal</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">walk</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>().walk()</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Cat walking&quot;</span>)</span><br><span class="line"></span><br><span class="line">honey = Cat()</span><br><span class="line"></span><br><span class="line">honey.walk()</span><br><span class="line"><span class="comment"># Output:</span></span><br><span class="line"><span class="comment"># Animal walking</span></span><br><span class="line"><span class="comment"># Cat walking</span></span><br></pre></td></tr></table></figure></div>
+<p>當我們在子類別定義一個跟父類別一模一樣的方法時，這叫「覆寫 (Override)」。</p>
+<ul>
+<li>如果不寫 <code>super()</code>：子類別會完全蓋掉父類別的行為。貓走路就只會印出 <code>&quot;Cat walking&quot;</code>。</li>
+<li>寫了 <code>super()</code>：這叫「擴充 (Extend)」，即呼叫父類別的同名方法。</li>
+</ul>
+<hr>
+<h2 id="多重繼承"><a href="#多重繼承" class="headerlink" title="多重繼承"></a>多重繼承</h2><p>可以同時繼承多個 class，好處是可以組合不同 class 的功能，但缺點是比較難找到某個方法來自哪個 class，不同父類別之間的 method 也可能產生衝突，有衝突時又不確定會先使用誰的 method。</p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Phone</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">call</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;撥打電話中...&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Camera</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">take_photo</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;咔嚓！拍照成功。&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 同時繼承兩個類別</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SmartPhone</span>(Phone, Camera):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">browse_web</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;正在開啟瀏覽器...&quot;</span>)</span><br><span class="line"></span><br><span class="line">iphone = SmartPhone()</span><br><span class="line">iphone.call()        <span class="comment"># 來自 Phone</span></span><br><span class="line">iphone.take_photo()  <span class="comment"># 來自 Camera</span></span><br><span class="line">iphone.browse_web()  <span class="comment"># 來自 SmartPhone 自己</span></span><br></pre></td></tr></table></figure></div>
+
+<p>但如果每個 class 都有 <code>__init__</code>，在 <code>SmartPhone</code> 的 <code>__init__</code> 裡呼叫了 <code>super()</code>，問題來了：會呼叫誰的 <code>__init__</code>？<br>這時就會啟動 Python 的算法：MRO。<br>當我們呼叫 <code>super()</code> 時，Python 並不是單純找「父類別」，而是根據一個清單按順序找，這個清單就叫 MRO。<br>所以 <code>super()</code> 在多重繼承中不是指「父類別」，而是指「MRO 序列中的下一個」。</p>
+<hr>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
+<li><a class="link"   target="_blank" rel="noopener" href="https://pythonbook.cc/chapters/basic/oop" >物件導向 - 基礎篇｜為你自己學 Python<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://realpython.com/python3-object-oriented-programming/" >Object-Oriented Programming (OOP) in Python - Real Python<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-tw/%E5%AF%B9%E8%B1%A1_(%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6)" >物件（電腦科學）- 維基百科<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10284380" >關於物件(Object)與類別(class) - iThome<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://comate.baidu.com/zh/page/8n8yk692bec" >Python中property装饰器的核心机制与实战应用<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></li>
+</ul>
+
+		</div>
+
+		
+
+		
+		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/Python%E5%9F%BA%E7%A4%8E/">#Python基礎</a>&nbsp;
+			</li>
+			
+		</ul>
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="prev" rel="prev" href="/2026/03/06/Python%E7%9A%84%E9%96%89%E5%8C%85%E8%88%87%E8%A3%9D%E9%A3%BE%E5%99%A8/">
+					<span class="left arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-left"></i>
+					</span>
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">Python的閉包與裝飾器</span>
+						<span class="post-nav-item">上一篇</span>
+					</span>
+				</a>
+			</div>
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/2026/02/23/Python%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">Python的垃圾回收</span>
+						<span class="post-nav-item">下一篇</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
+			<div class="comments-container mt-10 w-full ">
+    <div id="comment-anchor" class="w-full h-2.5"></div>
+    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
+        留言
+    </div>
+    
+
+        
+            
+    <div id="waline"></div>
+    <script type="module" data-swup-reload-script>
+      import { init } from '/js/libs/waline.js';
+
+      (function() {
+        const startPath = location.pathname;
+        const startTime = Date.now();
+        const retryDelay = 200;
+        const retryLimit = 5000;
+
+        const runWaline = () => {
+          if (location.pathname !== startPath) {
+            return;
+          }
+
+          const container = document.getElementById('waline');
+          if (!container) {
+            if (Date.now() - startTime < retryLimit) {
+              setTimeout(runWaline, retryDelay);
+            }
+            return;
+          }
+
+          if (window.redefineWalineInstance?.destroy) {
+            window.redefineWalineInstance.destroy();
+          }
+
+          container.innerHTML = '';
+          window.redefineWalineInstance = init({
+            el: '#waline',
+            serverURL: 'https://example.example.com',
+            path: location.pathname,
+            dark: 'body[class~="dark-mode"]',
+            reaction: false,
+            requiredMeta: ['nick', 'mail'],
+            emoji: [],
+                      lang: 'zh-TW',
+          });
+        };
+
+        runWaline();
+      })();
+    </script>
+
+
+
+        
+    
+</div>
+
+		</div>
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">目錄</div>
+		<div class="page-title">Python OOP介紹</div>
+		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%A6%81"><span class="nav-text">概要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OOP-%E6%98%AF%E4%BB%80%E9%BA%BC%EF%BC%9F"><span class="nav-text">OOP 是什麼？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%A9%E4%BB%B6%E6%98%AF%E4%BB%80%E9%BA%BC%EF%BC%9F"><span class="nav-text">物件是什麼？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%9E%E5%88%A5%E8%88%87%E7%89%A9%E4%BB%B6%E7%9A%84%E9%97%9C%E4%BF%82"><span class="nav-text">類別與物件的關係</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%A9%E4%BB%B6%E7%9A%84%E5%B1%AC%E6%80%A7"><span class="nav-text">物件的屬性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%A9%E4%BB%B6%E7%9A%84%E5%AF%A6%E9%AB%94%E6%96%B9%E6%B3%95"><span class="nav-text">物件的實體方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%9E%E5%88%A5%E5%B1%AC%E6%80%A7"><span class="nav-text">類別屬性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%AC%E6%80%A7%E8%A3%9D%E9%A3%BE%E5%99%A8%EF%BC%88Property%EF%BC%89"><span class="nav-text">屬性裝飾器（Property）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%90%E5%AE%9A%E5%B1%AC%E6%80%A7%E5%AD%98%E5%8F%96"><span class="nav-text">限定屬性存取</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%9E%E5%88%A5%E6%96%B9%E6%B3%95%E8%88%87%E9%9D%9C%E6%85%8B%E6%96%B9%E6%B3%95"><span class="nav-text">類別方法與靜態方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%9C%E6%85%8B%E6%96%B9%E6%B3%95%EF%BC%88-staticmethod%EF%BC%89"><span class="nav-text">靜態方法（@staticmethod）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%9E%E5%88%A5%E6%96%B9%E6%B3%95%EF%BC%88-classmethod%EF%BC%89"><span class="nav-text">類別方法（@classmethod）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B9%BC%E6%89%BF"><span class="nav-text">繼承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E9%87%8D%E7%B9%BC%E6%89%BF"><span class="nav-text">多重繼承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%96%99"><span class="nav-text">參考資料</span></a></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2026</span>
+              -
+            
+            2026&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Cinahan Yu</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        共 5 篇文章
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">讀者</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">閱覽</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm"><?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a> 框架</span>
+            <span class="text-sm lg:block">主題&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.9.0</a></span>
+        </div>
+        
+        
+            <div>
+                部落格已運行 <span class="odometer" id="runtime_days" ></span> 天 <span class="odometer" id="runtime_hours"></span> 小時 <span class="odometer" id="runtime_minutes"></span> 分鐘 <span class="odometer" id="runtime_seconds"></span> 秒
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+            
+                
+        
+                
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+		<li class="go-comment">
+			<i class="fa-regular fa-comments"></i>
+		</li>
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container" role="dialog" aria-modal="true" aria-label="圖片檢視器">
+	<button class="image-viewer-close" type="button" aria-label="關閉">
+		<i class="fa-solid fa-xmark"></i>
+	</button>
+	<button class="image-viewer-prev" type="button" aria-label="上一頁">
+		<i class="fa-solid fa-chevron-left"></i>
+	</button>
+	<div class="image-viewer-frame">
+		<img src="" alt="">
+	</div>
+	<div class="image-viewer-exif-panel hidden absolute left-1/2 bottom-20 -translate-x-1/2 w-[min(92vw,420px)] max-h-[60vh] overflow-hidden rounded-2xl bg-background-color-transparent-80 p-4 text-left shadow-redefine-flat backdrop-blur-md" role="dialog" aria-label="EXIF" aria-hidden="true">
+		<div class="flex items-center justify-between mb-3">
+			<span class="text-sm font-semibold text-first-text-color">EXIF</span>
+			<button class="image-viewer-exif-close flex h-8 w-8 items-center justify-center rounded-full bg-background-color-transparent-80 text-first-text-color transition hover:bg-background-color-transparent-40" type="button" aria-label="關閉">
+				<i class="fa-solid fa-xmark text-[0.65rem]"></i>
+			</button>
+		</div>
+		<div class="image-viewer-exif-cards grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-1 scrollbar-hide"></div>
+		<template class="image-viewer-exif-card-template">
+			<div class="rounded-lg bg-background-color-transparent-40 px-3 py-2">
+				<div class="image-viewer-exif-card-header flex items-center gap-2 mb-1">
+					<i class="image-viewer-exif-card-icon fa-solid fa-circle-info text-xs text-third-text-color"></i>
+					<div class="image-viewer-exif-card-title text-xs font-semibold text-first-text-color"></div>
+				</div>
+				<div class="image-viewer-exif-card-items flex flex-col gap-1"></div>
+			</div>
+		</template>
+	</div>
+	<button class="image-viewer-exif-toggle flex items-center gap-2 hidden absolute left-1/2 bottom-6 -translate-x-1/2 rounded-full border border-border-color bg-background-color-transparent-80 px-4 py-2 text-first-text-color backdrop-blur-md transition hover:bg-background-color-transparent-40" type="button" aria-label="EXIF" aria-expanded="false">
+		<i class="fa-solid fa-circle-info text-xs"></i>
+		<span class="text-xs font-semibold uppercase tracking-wider">EXIF</span>
+	</button>
+	<button class="image-viewer-next" type="button" aria-label="下一頁">
+		<i class="fa-solid fa-chevron-right"></i>
+	</button>
+</div>
+
+
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    window.swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+
+    window.dispatchEvent(
+        new CustomEvent("redefine:swup:ready", {
+            detail: {
+                swup: window.swup,
+            },
+        }),
+    );
+</script>
+
+
+
+
+	
+<script src="/js/build/main.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+
+
+
+    
+        
+<script src="/js/build/libs/mermaid.min.js"></script>
+
+    
+
+
+
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+
+	
+</body>
+
+</html>
